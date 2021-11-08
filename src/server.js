@@ -61,40 +61,35 @@ login(nome,password);
 
 app.post("/dados" , (req , res) => {
     const {nome} = req.body;
-    console.log(userInfo)
-    console.log(nome)
+    // console.log(userInfo)
+    // console.log(nome)
 
     const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
     (function load(){
         const url = 'http://10.10.100.28:8180/mge/service.sbr?serviceName=DbExplorerSP.executeQuery&outputType=json';
-        const sqlQuery = `Select CODUSU, CODEMP, NOMEUSU from TSIUSU WHERE NOMEUSU = '${nome}' ;`;
-        console.log(sqlQuery);
+        // const sqlQuery = `Select CODUSU, CODEMP, NOMEUSU from TSIUSU WHERE NOMEUSU = '${nome}' ;`;
+        const body = `{"serviceName":"DbExplorerSP.executeQuery","requestBody":{"sql":"Select CODUSU, CODEMP, NOMEUSU from TSIUSU WHERE NOMEUSU = \'${nome}\' "}}` ;
+        
 
-        const body = {
-            "serviceName" : "DbExplorerSP.executeQuery",
-            "requestBody" : {
-                "sql" : sqlQuery,
-            }
-            
-        }
         let options = { 
             method: 'POST',
-            qs: {serviceName: 'DbExplorerSP.executeQuery', outputType: 'json'},
+            // qs: {serviceName: 'DbExplorerSP.executeQuery', outputType: 'json'},
             headers: {
                 'Content-Type': 'application/json',
-                cookie: 'JSESSIONID=' + userInfo.JSESSIONID,
+                cookie: `JSESSIONID=${userInfo.JSESSIONID}; `,
             },
             body : body,
         };
+
         console.log(options)
 
         fetch(url, options)
-        .then(res => {
-            return res.json()
-        })
-        .then(json => res.json(json))
-        .catch(err => console.error('error:' + err));
+            .then(res => {
+                return res.json()
+            })
+            .then(json => res.json(json))
+            .catch(err => console.error('error:' + err));
 
     }())
 
