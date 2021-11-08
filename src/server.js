@@ -1,13 +1,8 @@
 const express = require('express')
 const  cors = require('cors')
-const fs = require('fs');
 const app = express()
 const port = 3000
 
-var userInfo = {
-    JSESSIONID: 0,
-    date: Date.now(),
-};
 
 app.use(cors())
 app.use(express.json()) 
@@ -40,10 +35,10 @@ function login(nome, pwd){
     fetch(url, options)
          .then(res => res.json())
          .then(json => {
-            var JSESSIONID = json.responseBody.jsessionid.$;
+            // var JSESSIONID = json.responseBody.jsessionid.$;
             var date = Date.now();
             userInfo = {
-                JSESSIONID,
+                // JSESSIONID,
                 date,
             }
             return res.json(json);
@@ -60,9 +55,9 @@ login(nome,password);
 
 
 app.post("/dados" , (req , res) => {
-    const {nome} = req.body;
-    // console.log(userInfo)
-    // console.log(nome)
+    const {nome, JSESSIONID} = req.body;
+
+    console.log(nome, JSESSIONID);
 
     const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
@@ -77,7 +72,7 @@ app.post("/dados" , (req , res) => {
             // qs: {serviceName: 'DbExplorerSP.executeQuery', outputType: 'json'},
             headers: {
                 'Content-Type': 'application/json',
-                cookie: `JSESSIONID=${userInfo.JSESSIONID}; `,
+                cookie: `JSESSIONID=${JSESSIONID}; `,
             },
             body : body,
         };
@@ -97,5 +92,5 @@ app.post("/dados" , (req , res) => {
 
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`App listening at http://localhost:${port}`)
 })
